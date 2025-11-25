@@ -23,6 +23,8 @@ const SHOWCASE_PATHS = [
   "mpox/clade-IIb",
   "flu/H5N1-Outbreak",
   "flu/H5N1-Outbreak-D1-1",
+  "flu/HA-H1",
+  "flu/HA-H3",
 ];
 
 function checkLegacyHostname() {
