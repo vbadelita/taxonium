@@ -417,14 +417,14 @@
     "maintainerUrl": "https://genome.ucsc.edu/cgi-bin/hgPhyloPlace"
   },
   "flu/HA-H1": {
-    "protoUrl": "https://taxonium.badelita.com/tree_HA_H1.json.gz",
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H1.jsonl.gz",
     "title": "Flu HA H1 tree",
     "description": "Flu HA H1 tree hosted by Vlad Badelita.",
     "icon": "/assets/usher.png",
     "maintainerMessage": "Maintained by Vlad Badelita"
   },
   "flu/HA-H3": {
-    "protoUrl": "https://taxonium.badelita.com/tree_HA_H3.json.gz",
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H3.jsonl.gz",
     "title": "Flu HA H3 tree",
     "description": "Flu HA H3 tree hosted by Vlad Badelita.",
     "icon": "/assets/usher.png",
