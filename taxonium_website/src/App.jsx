@@ -26,6 +26,7 @@ const SHOWCASE_PATHS = [
   "flu/HA-H1",
   "flu/HA-H3",
   "flu/HA-H5",
+  "flu/HA-H6",
   "flu/HA-H9",
 ];
 
