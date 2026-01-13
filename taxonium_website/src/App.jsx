@@ -25,6 +25,8 @@ const SHOWCASE_PATHS = [
   "flu/H5N1-Outbreak-D1-1",
   "flu/HA-H1",
   "flu/HA-H3",
+  "flu/HA-H5",
+  "flu/HA-H9",
 ];
 
 function checkLegacyHostname() {

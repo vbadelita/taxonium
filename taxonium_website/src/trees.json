@@ -429,5 +429,19 @@
     "description": "Flu HA H3 tree hosted by Vlad Badelita.",
     "icon": "/assets/usher.png",
     "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/HA-H5": {
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H5.jsonl.gz",
+    "title": "Flu HA H5 tree",
+    "description": "Flu HA H5 tree hosted by Vlad Badelita.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/HA-H9": {
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H9.jsonl.gz",
+    "title": "Flu HA H9 tree",
+    "description": "Flu HA H9 tree hosted by Vlad Badelita.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
   }
 }
