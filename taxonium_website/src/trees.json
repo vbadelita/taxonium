@@ -450,5 +450,124 @@
     "description": "Flu HA H9 tree hosted by Vlad Badelita.",
     "icon": "/assets/usher.png",
     "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/HA-H2": {
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H2.jsonl.gz",
+    "title": "Flu HA H2 tree",
+    "description": "Flu HA H2 tree hosted by Vlad Badelita.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/HA-H4": {
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H4.jsonl.gz",
+    "title": "Flu HA H4 tree",
+    "description": "Flu HA H4 tree hosted by Vlad Badelita.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/HA-H7": {
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H7.jsonl.gz",
+    "title": "Flu HA H7 tree",
+    "description": "Flu HA H7 tree hosted by Vlad Badelita.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/HA-H12": {
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H12.jsonl.gz",
+    "title": "Flu HA H12 tree",
+    "description": "Flu HA H12 tree hosted by Vlad Badelita.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/HA-H13": {
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H13.jsonl.gz",
+    "title": "Flu HA H13 tree",
+    "description": "Flu HA H13 tree hosted by Vlad Badelita.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/NA-N1": {
+    "protoUrl": "https://taxonium.badelita.com/tree_NA_N1.jsonl.gz",
+    "title": "Flu NA N1 tree",
+    "description": "Flu NA N1 tree hosted by Vlad Badelita.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/NA-N2": {
+    "protoUrl": "https://taxonium.badelita.com/tree_NA_N2.jsonl.gz",
+    "title": "Flu NA N2 tree",
+    "description": "Flu NA N2 tree hosted by Vlad Badelita.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/NA-N3": {
+    "protoUrl": "https://taxonium.badelita.com/tree_NA_N3.jsonl.gz",
+    "title": "Flu NA N3 tree",
+    "description": "Flu NA N3 tree hosted by Vlad Badelita.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/NA-N4": {
+    "protoUrl": "https://taxonium.badelita.com/tree_NA_N4.jsonl.gz",
+    "title": "Flu NA N4 tree",
+    "description": "Flu NA N4 tree hosted by Vlad Badelita.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/NA-N5": {
+    "protoUrl": "https://taxonium.badelita.com/tree_NA_N5.jsonl.gz",
+    "title": "Flu NA N5 tree",
+    "description": "Flu NA N5 tree hosted by Vlad Badelita.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/NA-N6": {
+    "protoUrl": "https://taxonium.badelita.com/tree_NA_N6.jsonl.gz",
+    "title": "Flu NA N6 tree",
+    "description": "Flu NA N6 tree hosted by Vlad Badelita.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/NA-N8": {
+    "protoUrl": "https://taxonium.badelita.com/tree_NA_N8.jsonl.gz",
+    "title": "Flu NA N8 tree",
+    "description": "Flu NA N8 tree hosted by Vlad Badelita.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/NA-N9": {
+    "protoUrl": "https://taxonium.badelita.com/tree_NA_N9.jsonl.gz",
+    "title": "Flu NA N9 tree",
+    "description": "Flu NA N9 tree hosted by Vlad Badelita.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/NP-all": {
+    "protoUrl": "https://taxonium.badelita.com/tree_NP_all.jsonl.gz",
+    "title": "Flu NP all tree",
+    "description": "Flu NP all tree hosted by Vlad Badelita.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/PA-all": {
+    "protoUrl": "https://taxonium.badelita.com/tree_PA_all.jsonl.gz",
+    "title": "Flu PA all tree",
+    "description": "Flu PA all tree hosted by Vlad Badelita.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/PB1-all": {
+    "protoUrl": "https://taxonium.badelita.com/tree_PB1_all.jsonl.gz",
+    "title": "Flu PB1 all tree",
+    "description": "Flu PB1 all tree hosted by Vlad Badelita.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/PB2-all": {
+    "protoUrl": "https://taxonium.badelita.com/tree_PB2_all.jsonl.gz",
+    "title": "Flu PB2 all tree",
+    "description": "Flu PB2 all tree hosted by Vlad Badelita.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
   }
 }
