@@ -15,14 +15,6 @@ import { Select } from "./components/Basic";
 
 // Hardcoded list of paths to show in the showcase
 const SHOWCASE_PATHS = [
-  "sars-cov-2/public",
-  "taxonomy/visual",
-  "taxonomy/full",
-  "tuberculosis/SRA",
-  "mpox/clade-I",
-  "mpox/clade-IIb",
-  "flu/H5N1-Outbreak",
-  "flu/H5N1-Outbreak-D1-1",
   "flu/HA-H1",
   "flu/HA-H2",
   "flu/HA-H3",
@@ -45,6 +37,14 @@ const SHOWCASE_PATHS = [
   "flu/PA-all",
   "flu/PB1-all",
   "flu/PB2-all",
+  "sars-cov-2/public",
+  "taxonomy/visual",
+  "taxonomy/full",
+  "tuberculosis/SRA",
+  "mpox/clade-I",
+  "mpox/clade-IIb",
+  "flu/H5N1-Outbreak",
+  "flu/H5N1-Outbreak-D1-1",
 ];
 
 function checkLegacyHostname() {
@@ -321,7 +321,7 @@ function App() {
               />
             </div>
           ) : (
-            <div className="m-10 space-y-3">
+            <div className="m-10 space-y-3 overflow-y-auto h-full">
               <p className="text-lg text-gray-700 mb-5 font-bold">
                 Welcome to Taxonium, a tool for exploring large trees
               </p>
