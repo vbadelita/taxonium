@@ -4,12 +4,17 @@ import warnings
 import os, tempfile, sys, errno
 import treeswift
 import shutil
-from . import ushertools
+from . import core_mutations
 
 
 def read_metadata(metadata_file, columns, key_column):
     must_have_cols = [key_column]
-    cols_of_interest = set(columns.split(",")) if columns else set()
+    if isinstance(columns, str):
+        cols_of_interest = set(columns.split(",")) if columns else set()
+    elif isinstance(columns, list):
+        cols_of_interest = set(columns)
+    else:
+        cols_of_interest = set()
     cols_of_interest.update(must_have_cols)
     cols_of_interest = list(cols_of_interest)
 
@@ -26,12 +31,18 @@ def read_metadata(metadata_file, columns, key_column):
         # Enable again
         warnings.filterwarnings("default")
         metadata[key_column] = metadata[key_column].astype(str)
+        # Handle duplicates instead of throwing an error
+        if metadata[key_column].duplicated().any():
+            duplicated_uids = metadata[
+                metadata[key_column].duplicated()][key_column].unique()
+            warnings.warn(
+                f"Warning: The key column '{key_column}' contains non-unique values: {', '.join(duplicated_uids)}. Keeping the first occurrence of each."
+            )
+            metadata = metadata.drop_duplicates(subset=[key_column],
+                                                keep='first')
+
         metadata.set_index(key_column, inplace=True)
         # convert metadata to dict of rows
-        if not metadata.index.is_unique:
-            raise ValueError(
-                f"Error: The key column '{key_column}' contains non-unique values in the metadata file."
-            )
 
         metadata_dict = metadata.to_dict("index")
         metadata_cols = metadata.columns.tolist()
@@ -84,9 +95,9 @@ def do_chronumental(mat, chronumental_reference_node, metadata_file,
         if chronumental_tree_output:
             shutil.copy2(os.path.join(tmpdirname, "timetree.nwk"),
                          chronumental_tree_output)
-        time_tree_iter = ushertools.preorder_traversal(time_tree.root)
+        time_tree_iter = core_mutations.preorder_traversal(time_tree.root)
         for i, node in alive_it(enumerate(
-                ushertools.preorder_traversal(mat.tree.root)),
+                core_mutations.preorder_traversal(mat.tree.root)),
                                 title="Adding time tree"):
             time_tree_node = next(time_tree_iter)
 
