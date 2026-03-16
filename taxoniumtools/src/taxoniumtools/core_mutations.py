@@ -12,7 +12,7 @@ def complement(input_string):
     return input_string.translate(str.maketrans("ATCGNagctn", "TAGCNtagcn"))
 
 
-@dataclass(eq=True, frozen=True)
+@dataclass(eq=True, frozen=True, slots=True)
 class AAMutation:
     gene: str
     one_indexed_codon: int
@@ -22,7 +22,7 @@ class AAMutation:
     type: str = "aa"
 
 
-@dataclass(eq=True, frozen=True)
+@dataclass(eq=True, frozen=True, slots=True)
 class NucMutation:  #hashable
     one_indexed_position: int
     par_nuc: str

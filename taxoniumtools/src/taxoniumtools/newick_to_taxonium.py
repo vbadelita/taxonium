@@ -3,13 +3,22 @@ import orjson
 import json
 import pandas as pd
 import datetime
+import gc
 import gzip
-import treeswift
-from alive_progress import alive_it, alive_bar
-
 import sys
 import os
 import logging
+import resource
+import treeswift
+from alive_progress import alive_it, alive_bar
+
+from Bio import SeqIO
+
+
+def log_mem(label):
+    rss_gb = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024 / 1024
+    print(f"[MEM] {label}: peak RSS {rss_gb:.2f} GB", flush=True)
+
 
 logging.getLogger('treetime').setLevel(logging.ERROR)
 
@@ -83,7 +92,143 @@ def get_parser():
                         '--config',
                         type=str,
                         help='Config file in JSON format')
+    parser.add_argument(
+        '--ancestral_reconstruction',
+        type=str,
+        choices=['treetime', 'parsimony'],
+        default=None,
+        help='Ancestral sequence reconstruction method for all segments: '
+        '"treetime" (accurate, slow, memory-heavy) or "parsimony" (naive but fast). '
+        'In config JSON, set "ancestral_reconstruction": "treetime"|"parsimony" per segment.'
+    )
     return parser
+
+
+def make_root_aa_mutations(ref_seq, loader, segment_name):
+    """Generate X->ref_AA AAMutations for every codon in every gene.
+
+    These are placed on the root so Taxonium knows the reference amino acid
+    state for all positions in this segment.
+    """
+    aa_muts = []
+    for codon_positions_by_index in loader.nuc_to_codon.values():
+        pass  # we iterate below via genes
+    seen_codons = set()
+    for genome_pos, codons in loader.nuc_to_codon.items():
+        for codon in codons:
+            if codon in seen_codons:
+                continue
+            seen_codons.add(codon)
+            codon_seq = [ref_seq[codon.positions[x]] for x in range(3)]
+            codon_str = "".join(codon_seq)
+            if codon.strand == -1:
+                codon_str = core_mutations.complement(codon_str)
+            ref_aa = core_mutations.codon_table.get(codon_str, "X")
+            aa_muts.append(
+                core_mutations.AAMutation(
+                    gene=codon.gene,
+                    one_indexed_codon=codon.codon_number + 1,
+                    initial_aa="X",
+                    final_aa=ref_aa,
+                    nuc_for_codon=codon.positions[1]))
+    return aa_muts
+
+
+def parsimony_ancestral_reconstruction(tree, tip_label_to_node, aln_f, ref_seq,
+                                       loader, segment_name):
+    """Naive parsimony reconstruction.
+
+    For each tip: compute absolute mutations vs reference (set of NucMutation).
+    Post-order: internal node's absolute set = intersection of children that
+    have data; children with no data are ignored.
+    Pre-order: branch mutations = absolute set minus parent's absolute set,
+    plus reversions (in parent but not in node). Then annotate AA mutations.
+    """
+    print(f"  Reading alignment and annotating tips for {segment_name}...")
+    matched = 0
+    for record in SeqIO.parse(aln_f, "fasta"):
+        if record.id not in tip_label_to_node:
+            continue
+        matched += 1
+        node = tip_label_to_node[record.id]
+        tip_seq = str(record.seq).upper()
+        abs_muts = {}
+        for i, (r, t) in enumerate(zip(ref_seq, tip_seq)):
+            if r != t and r != '-' and r != 'N' and t != '-' and t != 'N':
+                abs_muts[i + 1] = (r, t)
+        node._parsimony_abs = abs_muts
+
+    print(f"  Matched {matched} tips for {segment_name}.")
+
+    # Post-order: propagate up
+    print(
+        f"  Propagating mutations up tree (post-order) for {segment_name}...")
+    for node in tree.traverse_postorder():
+        if node.is_leaf():
+            if not hasattr(node, '_parsimony_abs'):
+                node._parsimony_abs = None  # missing from alignment
+        else:
+            child_sets = [
+                c._parsimony_abs for c in node.children
+                if c._parsimony_abs is not None
+            ]
+            if not child_sets:
+                node._parsimony_abs = None
+            elif len(child_sets) == 1:
+                node._parsimony_abs = dict(child_sets[0])
+            else:
+                # Intersection: positions where ALL children agree on same mut
+                common_positions = set(child_sets[0].keys())
+                for cs in child_sets[1:]:
+                    common_positions &= cs.keys()
+                node._parsimony_abs = {
+                    pos: child_sets[0][pos]
+                    for pos in common_positions if all(
+                        cs[pos] == child_sets[0][pos] for cs in child_sets[1:])
+                }
+
+    # Pre-order: convert absolute -> branch mutations, annotate AA
+    print(f"  Computing branch mutations (pre-order) for {segment_name}...")
+    for node in tree.traverse_preorder():
+        # If this node has no data for this segment, don't generate any branch
+        # mutations — it inherits whatever state its ancestors established.
+        if node._parsimony_abs is None:
+            continue
+
+        my_abs = node._parsimony_abs
+        par_abs = (node.parent._parsimony_abs or {}) if node.parent else {}
+
+        branch_muts = []
+        # Mutations gained on this branch
+        for pos, (ref_nuc, mut_nuc) in my_abs.items():
+            if pos not in par_abs:
+                branch_muts.append(
+                    core_mutations.NucMutation(one_indexed_position=pos,
+                                               par_nuc=ref_nuc,
+                                               mut_nuc=mut_nuc,
+                                               chromosome=segment_name))
+        # Reversions: in parent but not in this node
+        for pos, (ref_nuc, mut_nuc) in par_abs.items():
+            if pos not in my_abs:
+                branch_muts.append(
+                    core_mutations.NucMutation(one_indexed_position=pos,
+                                               par_nuc=mut_nuc,
+                                               mut_nuc=ref_nuc,
+                                               chromosome=segment_name))
+
+        node.nuc_mutations.extend(branch_muts)
+        if loader and branch_muts:
+            node.aa_muts.extend(
+                core_mutations.get_mutations({},
+                                             branch_muts,
+                                             ref_seq,
+                                             loader.nuc_to_codon,
+                                             chromosome=segment_name))
+
+    # Free the temporary absolute mutation sets
+    for node in tree.traverse_preorder():
+        if hasattr(node, '_parsimony_abs'):
+            del node._parsimony_abs
 
 
 def do_processing(input_tree,
@@ -93,7 +238,8 @@ def do_processing(input_tree,
                   genbank_files=None,
                   columns="",
                   title=None,
-                  key_column="strain"):
+                  key_column="strain",
+                  ancestral_reconstruction_flags=None):
     metadata_dict, metadata_cols = utils.read_metadata(metadata_file, columns,
                                                        key_column)
 
@@ -125,7 +271,6 @@ def do_processing(input_tree,
 
     # Optional sequence inference
     if aln_files:
-        from treetime import TreeAnc
         if not isinstance(aln_files, list):
             aln_files = [aln_files]
         if genbank_files and not isinstance(genbank_files, list):
@@ -135,6 +280,12 @@ def do_processing(input_tree,
             genbank_files = genbank_files * len(aln_files)
         elif not genbank_files:
             genbank_files = [None] * len(aln_files)
+
+        if ancestral_reconstruction_flags is None:
+            ancestral_reconstruction_flags = [None] * len(aln_files)
+        elif not isinstance(ancestral_reconstruction_flags, list):
+            ancestral_reconstruction_flags = [ancestral_reconstruction_flags
+                                              ] * len(aln_files)
 
         # Initialize nodes
         for node in tree.traverse_preorder():
@@ -149,96 +300,220 @@ def do_processing(input_tree,
         if not tree.root.label:
             tree.root.label = "NODE_0000000"
 
+        # Build label->node lookup for tips
+        tip_label_to_node = {}
+        for node in tree.traverse_leaves():
+            if node.label:
+                tip_label_to_node[node.label] = node
+
+        log_mem("tree loaded, before segments")
         all_gene_details = []
 
         for aln_idx, (aln_f, gb_f) in enumerate(zip(aln_files, genbank_files)):
+            ar_mode = ancestral_reconstruction_flags[
+                aln_idx]  # None, "treetime", "parsimony"
             segment_name = os.path.splitext(os.path.basename(aln_f))[0]
+            mode_label = f" ({ar_mode})" if ar_mode else " (tips only)"
             print(
-                f"Processing segment {aln_idx+1}/{len(aln_files)}: {segment_name}"
+                f"Processing segment {aln_idx+1}/{len(aln_files)}: {segment_name}{mode_label}"
             )
+            log_mem(f"start of {segment_name}")
 
-            print(
-                f"  Running Ancestral Sequence Reconstruction with TreeTime for {segment_name}..."
-            )
-            ta = TreeAnc(tree=treetime_input, aln=aln_f, gtr='JC69', verbose=0)
-            ta.infer_ancestral_sequences()
-
-            dummy = None
-            if gb_f:
-                print(f"  Loading GenBank annotations for {segment_name}...")
-                dummy = core_mutations.GenbankLoader(gb_f)
-                all_gene_details.extend(list(dummy.genes.keys()))
-
-            ta_node_dict = {
-                node.name: node
-                for node in ta.tree.find_clades() if node.name is not None
-            }
-
-            print(
-                f"  Mapped sequences for {segment_name}. Extracting nucleotide mutations..."
-            )
-            for node in tree.traverse_preorder():
-                if node.parent:
-                    my_seq = ta_node_dict[
-                        node.
-                        label].sequence if node.label in ta_node_dict else None
-                    par_seq = ta_node_dict[
-                        node.parent.
-                        label].sequence if node.parent.label in ta_node_dict else None
-
-                    if my_seq is not None and par_seq is not None:
-                        for i, (p, m) in enumerate(zip(par_seq, my_seq)):
-                            if p != m and p != '-' and p != 'N' and m != '-' and m != 'N':
-                                mut = core_mutations.NucMutation(
-                                    one_indexed_position=i + 1,
-                                    par_nuc=p,
-                                    mut_nuc=m,
-                                    chromosome=segment_name)
-                                node.nuc_mutations.append(mut)
-
-            if gb_f:
-                print(
-                    f"  Performing amino acid translation analysis for {segment_name}..."
-                )
-                root_seq = getattr(ta_node_dict[tree.root.label], 'sequence',
-                                   None)
-                if root_seq is None:
+            if ar_mode is None:
+                # Tips-only mode: read FASTA directly, diff against reference,
+                # annotate only leaf nodes. No TreeTime.
+                if not gb_f:
                     print(
-                        f"  Root sequence missing from TreeTime for {segment_name}, defaulting to GenBank sequence."
+                        f"  Warning: tips_only without GenBank for {segment_name}, skipping AA annotation."
                     )
-                    root_seq = str(dummy.genbank.seq)
-                else:
-                    root_seq = "".join(root_seq)
 
-                with alive_bar(
-                        tree.num_nodes(),
-                        title=f"  Annotating AA for {segment_name}") as pbar:
-                    core_mutations.recursive_mutation_analysis(
-                        tree.root, {},
-                        root_seq,
-                        dummy.cdses,
-                        pbar,
-                        dummy.nuc_to_codon,
-                        chromosome=segment_name)
+                ref_seq = None
+                loader = None
+                if gb_f:
+                    loader = core_mutations.GenbankLoader(gb_f)
+                    ref_seq = str(loader.genbank.seq)
+                    all_gene_details.extend(list(loader.genes.keys()))
 
-                # Add root mutations for this segment
-                root_muts = []
-                for i, character in enumerate(root_seq):
-                    root_muts.append(
+                # Stream alignment sequences one at a time to avoid loading all into memory
+                print(f"  Annotating tips for {segment_name}...")
+                matched = 0
+                for record in SeqIO.parse(aln_f, "fasta"):
+                    if record.id not in tip_label_to_node:
+                        continue
+                    matched += 1
+                    node = tip_label_to_node[record.id]
+                    tip_seq = str(record.seq).upper()
+
+                    if ref_seq is None:
+                        continue
+
+                    # Compute nuc mutations vs reference
+                    tip_nuc_muts = []
+                    for i, (r, t) in enumerate(zip(ref_seq, tip_seq)):
+                        if r != t and r != '-' and r != 'N' and t != '-' and t != 'N':
+                            mut = core_mutations.NucMutation(
+                                one_indexed_position=i + 1,
+                                par_nuc=r,
+                                mut_nuc=t,
+                                chromosome=segment_name)
+                            tip_nuc_muts.append(mut)
+                    node.nuc_mutations.extend(tip_nuc_muts)
+
+                    # Compute AA mutations
+                    if loader:
+                        aa_muts = core_mutations.get_mutations(
+                            {},
+                            tip_nuc_muts,
+                            ref_seq,
+                            loader.nuc_to_codon,
+                            chromosome=segment_name)
+                        node.aa_muts.extend(aa_muts)
+
+                print(
+                    f"  Matched {matched}/{len(tip_label_to_node)} tips for {segment_name}."
+                )
+
+                # Add root reference mutations so Taxonium knows the reference state
+                if ref_seq and loader:
+                    root_muts = [
                         core_mutations.NucMutation(one_indexed_position=i + 1,
                                                    mut_nuc=character,
                                                    par_nuc="X",
-                                                   chromosome=segment_name))
+                                                   chromosome=segment_name)
+                        for i, character in enumerate(ref_seq)
+                    ]
+                    segment_root_aa_muts = make_root_aa_mutations(
+                        ref_seq, loader, segment_name)
+                    tree.root.aa_muts.extend(segment_root_aa_muts)
+                    tree.root.nuc_mutations.extend(root_muts)
 
-                segment_root_aa_muts = core_mutations.get_mutations(
-                    {},
-                    root_muts,
-                    root_seq,
-                    dummy.nuc_to_codon,
-                    disable_check_for_differences=True,
-                    chromosome=segment_name)
-                tree.root.aa_muts.extend(segment_root_aa_muts)
-                tree.root.nuc_mutations.extend(root_muts)
+                del loader, ref_seq
+                gc.collect()
+                log_mem(f"end of {segment_name} (after gc)")
+
+            elif ar_mode == "parsimony":
+                loader = None
+                ref_seq = None
+                if gb_f:
+                    loader = core_mutations.GenbankLoader(gb_f)
+                    ref_seq = str(loader.genbank.seq)
+                    all_gene_details.extend(list(loader.genes.keys()))
+
+                if ref_seq:
+                    parsimony_ancestral_reconstruction(tree, tip_label_to_node,
+                                                       aln_f, ref_seq, loader,
+                                                       segment_name)
+
+                    # Add root reference mutations
+                    root_muts = [
+                        core_mutations.NucMutation(one_indexed_position=i + 1,
+                                                   mut_nuc=character,
+                                                   par_nuc="X",
+                                                   chromosome=segment_name)
+                        for i, character in enumerate(ref_seq)
+                    ]
+                    segment_root_aa_muts = make_root_aa_mutations(
+                        ref_seq, loader, segment_name)
+                    tree.root.aa_muts.extend(segment_root_aa_muts)
+                    tree.root.nuc_mutations.extend(root_muts)
+                else:
+                    print(
+                        f"  Warning: parsimony without GenBank for {segment_name}, skipping."
+                    )
+
+                del loader, ref_seq
+                gc.collect()
+                log_mem(f"end of {segment_name} (after gc)")
+
+            else:
+                # Full TreeTime ancestral reconstruction mode
+                from treetime import TreeAnc
+
+                print(
+                    f"  Running Ancestral Sequence Reconstruction with TreeTime for {segment_name}..."
+                )
+                ta = TreeAnc(tree=treetime_input,
+                             aln=aln_f,
+                             gtr='JC69',
+                             verbose=0)
+                ta.infer_ancestral_sequences()
+                log_mem(f"after TreeTime ASR for {segment_name}")
+
+                dummy = None
+                if gb_f:
+                    print(
+                        f"  Loading GenBank annotations for {segment_name}...")
+                    dummy = core_mutations.GenbankLoader(gb_f)
+                    all_gene_details.extend(list(dummy.genes.keys()))
+
+                ta_node_dict = {
+                    node.name: node
+                    for node in ta.tree.find_clades() if node.name is not None
+                }
+
+                print(
+                    f"  Mapped sequences for {segment_name}. Extracting nucleotide mutations..."
+                )
+                for node in tree.traverse_preorder():
+                    if node.parent:
+                        my_seq = ta_node_dict[
+                            node.
+                            label].sequence if node.label in ta_node_dict else None
+                        par_seq = ta_node_dict[
+                            node.parent.
+                            label].sequence if node.parent.label in ta_node_dict else None
+
+                        if my_seq is not None and par_seq is not None:
+                            for i, (p, m) in enumerate(zip(par_seq, my_seq)):
+                                if p != m and p != '-' and p != 'N' and m != '-' and m != 'N':
+                                    mut = core_mutations.NucMutation(
+                                        one_indexed_position=i + 1,
+                                        par_nuc=p,
+                                        mut_nuc=m,
+                                        chromosome=segment_name)
+                                    node.nuc_mutations.append(mut)
+
+                if gb_f:
+                    print(
+                        f"  Performing amino acid translation analysis for {segment_name}..."
+                    )
+                    root_seq = getattr(ta_node_dict[tree.root.label],
+                                       'sequence', None)
+                    if root_seq is None:
+                        print(
+                            f"  Root sequence missing from TreeTime for {segment_name}, defaulting to GenBank sequence."
+                        )
+                        root_seq = str(dummy.genbank.seq)
+                    else:
+                        root_seq = "".join(root_seq)
+
+                    with alive_bar(tree.num_nodes(),
+                                   title=f"  Annotating AA for {segment_name}"
+                                   ) as pbar:
+                        core_mutations.recursive_mutation_analysis(
+                            tree.root, {},
+                            root_seq,
+                            dummy.cdses,
+                            pbar,
+                            dummy.nuc_to_codon,
+                            chromosome=segment_name)
+
+                    # Add root mutations for this segment
+                    root_muts = [
+                        core_mutations.NucMutation(one_indexed_position=i + 1,
+                                                   mut_nuc=character,
+                                                   par_nuc="X",
+                                                   chromosome=segment_name)
+                        for i, character in enumerate(root_seq)
+                    ]
+                    segment_root_aa_muts = make_root_aa_mutations(
+                        root_seq, dummy, segment_name)
+                    tree.root.aa_muts.extend(segment_root_aa_muts)
+                    tree.root.nuc_mutations.extend(root_muts)
+
+                del ta, ta_node_dict
+                gc.collect()
+                log_mem(f"end of {segment_name} (after gc)")
 
         config['gene_details'] = sorted(list(set(all_gene_details)))
 
@@ -355,20 +630,43 @@ def main():
         else:
             genbank_files = config_data.get('genbank')
 
+    # ancestral_reconstruction: per-segment from config, or global from CLI flag
+    # Values: None (tips only), "treetime", "parsimony"
+    # Config may use true (legacy, treated as "treetime") or a string
+    def _parse_ar(val):
+        if val is True:
+            return "treetime"
+        if val in (False, None):
+            return None
+        return val  # already a string
+
+    ancestral_reconstruction_flags = None
+    if 'segments' in config_data:
+        ancestral_reconstruction_flags = [
+            _parse_ar(s.get('ancestral_reconstruction'))
+            for s in config_data['segments']
+        ]
+    if args.ancestral_reconstruction:
+        # CLI --ancestral_reconstruction overrides: set all segments
+        n = len(aln_files) if aln_files else 0
+        ancestral_reconstruction_flags = [args.ancestral_reconstruction] * n
+
     if not input_tree or not output_file:
         print(
             "Error: input and output are required (either via CLI or config file)"
         )
         sys.exit(1)
 
-    do_processing(input_tree=input_tree,
-                  output_file=output_file,
-                  aln_files=aln_files,
-                  metadata_file=metadata_file,
-                  genbank_files=genbank_files,
-                  columns=columns,
-                  title=title,
-                  key_column=key_column)
+    do_processing(
+        input_tree=input_tree,
+        output_file=output_file,
+        aln_files=aln_files,
+        metadata_file=metadata_file,
+        genbank_files=genbank_files,
+        columns=columns,
+        title=title,
+        key_column=key_column,
+        ancestral_reconstruction_flags=ancestral_reconstruction_flags)
 
 
 if __name__ == "__main__":
