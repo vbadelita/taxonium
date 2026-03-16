@@ -4,7 +4,19 @@ Human-readable log of changes to the taxoniumtools codebase.
 
 ---
 
-## 2026-03-16
+## 2026-03-16 (2)
+
+### `utils.py` — categorical metadata values serialized as strings
+
+**Files changed:** `utils.py`
+
+Metadata columns that pandas infers as `float64` (e.g. clade labels `1`, `2`, `3` that become `1.0`, `2.0` due to missing values in the column) were being written to JSONL as numeric floats. In the Taxonium frontend, numeric values are colored via a log10 plasma ramp — `log10(1) = 0` and `log10(2) ≈ 0.03` are nearly identical, so all clades rendered as the same dark blue.
+
+Whole-number floats are now converted to integer strings (`1.0` → `"1"`) in `get_node_object()` before serialization. The frontend then treats them as categorical strings and assigns distinct colors via its hash-based color logic. Genuine decimal floats are left unchanged.
+
+---
+
+## 2026-03-16 (1)
 
 ### `newick_to_taxonium.py` — parsimony ancestral reconstruction fixes
 

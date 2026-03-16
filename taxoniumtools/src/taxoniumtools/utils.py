@@ -259,6 +259,8 @@ def get_node_object(node, node_to_index, metadata, input_to_index, columns,
             #if value is pd.NaN then set to empty string
             if pd.isna(value):
                 value = ""
+            elif isinstance(value, float) and value.is_integer():
+                value = str(int(value))
             object["meta_" + key] = value
     except KeyError:
         for key in columns:

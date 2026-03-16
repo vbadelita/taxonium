@@ -8,17 +8,10 @@ import gzip
 import sys
 import os
 import logging
-import resource
 import treeswift
 from alive_progress import alive_it, alive_bar
 
 from Bio import SeqIO
-
-
-def log_mem(label):
-    rss_gb = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024 / 1024
-    print(f"[MEM] {label}: peak RSS {rss_gb:.2f} GB", flush=True)
-
 
 logging.getLogger('treetime').setLevel(logging.ERROR)
 
@@ -306,7 +299,6 @@ def do_processing(input_tree,
             if node.label:
                 tip_label_to_node[node.label] = node
 
-        log_mem("tree loaded, before segments")
         all_gene_details = []
 
         for aln_idx, (aln_f, gb_f) in enumerate(zip(aln_files, genbank_files)):
@@ -317,7 +309,6 @@ def do_processing(input_tree,
             print(
                 f"Processing segment {aln_idx+1}/{len(aln_files)}: {segment_name}{mode_label}"
             )
-            log_mem(f"start of {segment_name}")
 
             if ar_mode is None:
                 # Tips-only mode: read FASTA directly, diff against reference,
@@ -389,7 +380,6 @@ def do_processing(input_tree,
 
                 del loader, ref_seq
                 gc.collect()
-                log_mem(f"end of {segment_name} (after gc)")
 
             elif ar_mode == "parsimony":
                 loader = None
@@ -423,7 +413,6 @@ def do_processing(input_tree,
 
                 del loader, ref_seq
                 gc.collect()
-                log_mem(f"end of {segment_name} (after gc)")
 
             else:
                 # Full TreeTime ancestral reconstruction mode
@@ -437,7 +426,6 @@ def do_processing(input_tree,
                              gtr='JC69',
                              verbose=0)
                 ta.infer_ancestral_sequences()
-                log_mem(f"after TreeTime ASR for {segment_name}")
 
                 dummy = None
                 if gb_f:
@@ -513,7 +501,6 @@ def do_processing(input_tree,
 
                 del ta, ta_node_dict
                 gc.collect()
-                log_mem(f"end of {segment_name} (after gc)")
 
         config['gene_details'] = sorted(list(set(all_gene_details)))
 
