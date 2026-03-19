@@ -127,6 +127,30 @@ def make_root_aa_mutations(ref_seq, loader, segment_name):
     return aa_muts
 
 
+def make_missing_aa_mutations(loader):
+    """Generate X->X AAMutations for every codon in every gene.
+
+    These are placed on tip nodes that are absent from a segment's alignment,
+    so Taxonium shows X (unknown) rather than inheriting the parent's inferred
+    state.
+    """
+    aa_muts = []
+    seen_codons = set()
+    for genome_pos, codons in loader.nuc_to_codon.items():
+        for codon in codons:
+            if codon in seen_codons:
+                continue
+            seen_codons.add(codon)
+            aa_muts.append(
+                core_mutations.AAMutation(
+                    gene=codon.gene,
+                    one_indexed_codon=codon.codon_number + 1,
+                    initial_aa="X",
+                    final_aa="X",
+                    nuc_for_codon=codon.positions[1]))
+    return aa_muts
+
+
 def parsimony_ancestral_reconstruction(tree, tip_label_to_node, aln_f, ref_seq,
                                        loader, segment_name):
     """Naive parsimony reconstruction.
@@ -180,12 +204,19 @@ def parsimony_ancestral_reconstruction(tree, tip_label_to_node, aln_f, ref_seq,
                         cs[pos] == child_sets[0][pos] for cs in child_sets[1:])
                 }
 
-    # Pre-order: convert absolute -> branch mutations, annotate AA
+    # Pre-order: convert absolute -> branch mutations, annotate AA.
+    # At the boundary where a node has no data but its parent does (or it is the
+    # root with no data), emit X->X AA mutations once. All descendants inherit X
+    # by the normal parent-walk in Taxonium, so no per-tip mutations are needed.
     print(f"  Computing branch mutations (pre-order) for {segment_name}...")
+    missing_aa_muts = make_missing_aa_mutations(loader) if loader else []
     for node in tree.traverse_preorder():
-        # If this node has no data for this segment, don't generate any branch
-        # mutations — it inherits whatever state its ancestors established.
         if node._parsimony_abs is None:
+            parent_has_data = (node.parent is not None
+                               and node.parent._parsimony_abs is not None)
+            is_root_with_no_data = node.parent is None
+            if parent_has_data or is_root_with_no_data:
+                node.aa_muts.extend(missing_aa_muts)
             continue
 
         my_abs = node._parsimony_abs
@@ -328,10 +359,12 @@ def do_processing(input_tree,
                 # Stream alignment sequences one at a time to avoid loading all into memory
                 print(f"  Annotating tips for {segment_name}...")
                 matched = 0
+                matched_tips = set()
                 for record in SeqIO.parse(aln_f, "fasta"):
                     if record.id not in tip_label_to_node:
                         continue
                     matched += 1
+                    matched_tips.add(record.id)
                     node = tip_label_to_node[record.id]
                     tip_seq = str(record.seq).upper()
 
@@ -363,6 +396,30 @@ def do_processing(input_tree,
                 print(
                     f"  Matched {matched}/{len(tip_label_to_node)} tips for {segment_name}."
                 )
+
+                # Mark missing tips with X->X so Taxonium shows unknown.
+                # Place X->X only at the boundary node (highest ancestor whose
+                # entire subtree is absent from this segment) rather than on
+                # every missing tip, so descendants inherit X without needing
+                # their own mutation entries.
+                if loader:
+                    missing_aa_muts = make_missing_aa_mutations(loader)
+                    # Count matched tips in each node's subtree (postorder)
+                    for node in tree.traverse_postorder():
+                        if node.is_leaf():
+                            node._seg_matched = 1 if node.label in matched_tips else 0
+                        else:
+                            node._seg_matched = sum(c._seg_matched
+                                                    for c in node.children)
+                    # Preorder: emit X->X at the transition boundary
+                    for node in tree.traverse_preorder():
+                        par_matched = (node.parent._seg_matched
+                                       if node.parent else -1)
+                        if node._seg_matched == 0 and par_matched != 0:
+                            node.aa_muts.extend(missing_aa_muts)
+                    for node in tree.traverse_preorder():
+                        if hasattr(node, '_seg_matched'):
+                            del node._seg_matched
 
                 # Add root reference mutations so Taxonium knows the reference state
                 if ref_seq and loader:
@@ -498,6 +555,25 @@ def do_processing(input_tree,
                         root_seq, dummy, segment_name)
                     tree.root.aa_muts.extend(segment_root_aa_muts)
                     tree.root.nuc_mutations.extend(root_muts)
+
+                    # Mark nodes absent from this segment with X->X at the
+                    # boundary (highest ancestor whose entire subtree is absent)
+                    # so descendants inherit X without per-tip entries.
+                    missing_aa_muts = make_missing_aa_mutations(dummy)
+                    for node in tree.traverse_postorder():
+                        if node.is_leaf():
+                            node._seg_matched = 1 if node.label in ta_node_dict else 0
+                        else:
+                            node._seg_matched = sum(c._seg_matched
+                                                    for c in node.children)
+                    for node in tree.traverse_preorder():
+                        par_matched = (node.parent._seg_matched
+                                       if node.parent else -1)
+                        if node._seg_matched == 0 and par_matched != 0:
+                            node.aa_muts.extend(missing_aa_muts)
+                    for node in tree.traverse_preorder():
+                        if hasattr(node, '_seg_matched'):
+                            del node._seg_matched
 
                 del ta, ta_node_dict
                 gc.collect()

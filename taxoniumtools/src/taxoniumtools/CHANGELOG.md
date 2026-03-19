@@ -4,6 +4,28 @@ Human-readable log of changes to the taxoniumtools codebase.
 
 ---
 
+## 2026-03-18
+
+### `newick_to_taxonium.py` — X→X missing markers placed at subtree boundaries, not per tip
+
+**Files changed:** `newick_to_taxonium.py`
+
+Moved the placement of `X→X` missing-data markers from individual leaf nodes to the highest boundary node whose entire subtree is absent from the segment's alignment. This means Taxonium inherits `X` down through the subtree via its normal parent-walk, avoiding one `X→X` entry per codon per missing tip. For all three modes (parsimony, tips-only, treetime), a post-order pass counts matched tips per subtree, then a pre-order pass emits `X→X` only at nodes where `_seg_matched == 0` but the parent has `_seg_matched > 0`.
+
+---
+
+## 2026-03-17
+
+### `newick_to_taxonium.py` — missing tips show X instead of inheriting parent state
+
+**Files changed:** `newick_to_taxonium.py`
+
+Tips absent from a segment's alignment were silently inheriting the ancestral state inferred for that position from their parent node. This made it impossible to distinguish "this tip has residue K at PB2:627" from "this tip has no PB2 data at all."
+
+Added `make_missing_aa_mutations()`, which generates `X→X` `AAMutation` objects for every codon in every gene of a segment. These are applied at boundary nodes (see 2026-03-18 entry) so that all descendants show X without needing individual mutations. When Taxonium's genotype coloring walks up the tree looking for the most recent mutation at a position, it finds `new_residue = "X"` and stops, displaying grey (unknown) rather than the inherited ancestral residue.
+
+---
+
 ## 2026-03-16 (2)
 
 ### `utils.py` — categorical metadata values serialized as strings
