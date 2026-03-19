@@ -418,155 +418,344 @@
   },
   "flu/HA-H1": {
     "protoUrl": "https://taxonium.badelita.com/tree_HA_H1.jsonl.gz",
-    "title": "Flu HA H1 tree",
-    "description": "Flu HA H1 tree hosted by Vlad Badelita.",
+    "title": "Flu HA H1",
+    "description": "Influenza A HA subtype H1 tree.",
     "icon": "/assets/usher.png",
     "maintainerMessage": "Maintained by Vlad Badelita"
   },
-  "flu/HA-H3": {
-    "protoUrl": "https://taxonium.badelita.com/tree_HA_H3.jsonl.gz",
-    "title": "Flu HA H3 tree",
-    "description": "Flu HA H3 tree hosted by Vlad Badelita.",
-    "icon": "/assets/usher.png",
-    "maintainerMessage": "Maintained by Vlad Badelita"
-  },
-  "flu/HA-H5": {
-    "protoUrl": "https://taxonium.badelita.com/tree_HA_H5.jsonl.gz",
-    "title": "Flu HA H5 tree",
-    "description": "Flu HA H5 tree hosted by Vlad Badelita.",
-    "icon": "/assets/usher.png",
-    "maintainerMessage": "Maintained by Vlad Badelita"
-  },
-  "flu/HA-H6": {
-    "protoUrl": "https://taxonium.badelita.com/tree_HA_H6.jsonl.gz",
-    "title": "Flu HA H6 tree",
-    "description": "Flu HA H6 tree hosted by Vlad Badelita.",
-    "icon": "/assets/usher.png",
-    "maintainerMessage": "Maintained by Vlad Badelita"
-  },
-  "flu/HA-H9": {
-    "protoUrl": "https://taxonium.badelita.com/tree_HA_H9.jsonl.gz",
-    "title": "Flu HA H9 tree",
-    "description": "Flu HA H9 tree hosted by Vlad Badelita.",
+  "flu/HA-H1-allseg": {
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H1_allseg.jsonl.gz",
+    "title": "Flu HA H1 (all segments)",
+    "description": "Influenza A HA subtype H1 tree with all segments annotated.",
     "icon": "/assets/usher.png",
     "maintainerMessage": "Maintained by Vlad Badelita"
   },
   "flu/HA-H2": {
     "protoUrl": "https://taxonium.badelita.com/tree_HA_H2.jsonl.gz",
-    "title": "Flu HA H2 tree",
-    "description": "Flu HA H2 tree hosted by Vlad Badelita.",
+    "title": "Flu HA H2",
+    "description": "Influenza A HA subtype H2 tree.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/HA-H2-allseg": {
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H2_allseg.jsonl.gz",
+    "title": "Flu HA H2 (all segments)",
+    "description": "Influenza A HA subtype H2 tree with all segments annotated.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/HA-H3": {
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H3.jsonl.gz",
+    "title": "Flu HA H3",
+    "description": "Influenza A HA subtype H3 tree.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/HA-H3-allseg": {
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H3_allseg.jsonl.gz",
+    "title": "Flu HA H3 (all segments)",
+    "description": "Influenza A HA subtype H3 tree with all segments annotated.",
     "icon": "/assets/usher.png",
     "maintainerMessage": "Maintained by Vlad Badelita"
   },
   "flu/HA-H4": {
     "protoUrl": "https://taxonium.badelita.com/tree_HA_H4.jsonl.gz",
-    "title": "Flu HA H4 tree",
-    "description": "Flu HA H4 tree hosted by Vlad Badelita.",
+    "title": "Flu HA H4",
+    "description": "Influenza A HA subtype H4 tree.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/HA-H4-allseg": {
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H4_allseg.jsonl.gz",
+    "title": "Flu HA H4 (all segments)",
+    "description": "Influenza A HA subtype H4 tree with all segments annotated.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/HA-H5": {
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H5.jsonl.gz",
+    "title": "Flu HA H5",
+    "description": "Influenza A HA subtype H5 tree.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/HA-H5-allseg": {
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H5_allseg.jsonl.gz",
+    "title": "Flu HA H5 (all segments)",
+    "description": "Influenza A HA subtype H5 tree with all segments annotated.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/HA-H6": {
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H6.jsonl.gz",
+    "title": "Flu HA H6",
+    "description": "Influenza A HA subtype H6 tree.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/HA-H6-allseg": {
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H6_allseg.jsonl.gz",
+    "title": "Flu HA H6 (all segments)",
+    "description": "Influenza A HA subtype H6 tree with all segments annotated.",
     "icon": "/assets/usher.png",
     "maintainerMessage": "Maintained by Vlad Badelita"
   },
   "flu/HA-H7": {
     "protoUrl": "https://taxonium.badelita.com/tree_HA_H7.jsonl.gz",
-    "title": "Flu HA H7 tree",
-    "description": "Flu HA H7 tree hosted by Vlad Badelita.",
+    "title": "Flu HA H7",
+    "description": "Influenza A HA subtype H7 tree.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/HA-H7-allseg": {
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H7_allseg.jsonl.gz",
+    "title": "Flu HA H7 (all segments)",
+    "description": "Influenza A HA subtype H7 tree with all segments annotated.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/HA-H8": {
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H8.jsonl.gz",
+    "title": "Flu HA H8",
+    "description": "Influenza A HA subtype H8 tree.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/HA-H8-allseg": {
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H8_allseg.jsonl.gz",
+    "title": "Flu HA H8 (all segments)",
+    "description": "Influenza A HA subtype H8 tree with all segments annotated.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/HA-H9": {
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H9.jsonl.gz",
+    "title": "Flu HA H9",
+    "description": "Influenza A HA subtype H9 tree.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/HA-H9-allseg": {
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H9_allseg.jsonl.gz",
+    "title": "Flu HA H9 (all segments)",
+    "description": "Influenza A HA subtype H9 tree with all segments annotated.",
     "icon": "/assets/usher.png",
     "maintainerMessage": "Maintained by Vlad Badelita"
   },
   "flu/HA-H12": {
     "protoUrl": "https://taxonium.badelita.com/tree_HA_H12.jsonl.gz",
-    "title": "Flu HA H12 tree",
-    "description": "Flu HA H12 tree hosted by Vlad Badelita.",
+    "title": "Flu HA H12",
+    "description": "Influenza A HA subtype H12 tree.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/HA-H12-allseg": {
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H12_allseg.jsonl.gz",
+    "title": "Flu HA H12 (all segments)",
+    "description": "Influenza A HA subtype H12 tree with all segments annotated.",
     "icon": "/assets/usher.png",
     "maintainerMessage": "Maintained by Vlad Badelita"
   },
   "flu/HA-H13": {
     "protoUrl": "https://taxonium.badelita.com/tree_HA_H13.jsonl.gz",
-    "title": "Flu HA H13 tree",
-    "description": "Flu HA H13 tree hosted by Vlad Badelita.",
+    "title": "Flu HA H13",
+    "description": "Influenza A HA subtype H13 tree.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/HA-H13-allseg": {
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H13_allseg.jsonl.gz",
+    "title": "Flu HA H13 (all segments)",
+    "description": "Influenza A HA subtype H13 tree with all segments annotated.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/HA-H14": {
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H14.jsonl.gz",
+    "title": "Flu HA H14",
+    "description": "Influenza A HA subtype H14 tree.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/HA-H14-allseg": {
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H14_allseg.jsonl.gz",
+    "title": "Flu HA H14 (all segments)",
+    "description": "Influenza A HA subtype H14 tree with all segments annotated.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/HA-H15": {
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H15.jsonl.gz",
+    "title": "Flu HA H15",
+    "description": "Influenza A HA subtype H15 tree.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/HA-H15-allseg": {
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H15_allseg.jsonl.gz",
+    "title": "Flu HA H15 (all segments)",
+    "description": "Influenza A HA subtype H15 tree with all segments annotated.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/HA-H16": {
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H16.jsonl.gz",
+    "title": "Flu HA H16",
+    "description": "Influenza A HA subtype H16 tree.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/HA-H16-allseg": {
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H16_allseg.jsonl.gz",
+    "title": "Flu HA H16 (all segments)",
+    "description": "Influenza A HA subtype H16 tree with all segments annotated.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/HA-H17": {
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H17.jsonl.gz",
+    "title": "Flu HA H17",
+    "description": "Influenza A HA subtype H17 tree.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/HA-H17-allseg": {
+    "protoUrl": "https://taxonium.badelita.com/tree_HA_H17_allseg.jsonl.gz",
+    "title": "Flu HA H17 (all segments)",
+    "description": "Influenza A HA subtype H17 tree with all segments annotated.",
     "icon": "/assets/usher.png",
     "maintainerMessage": "Maintained by Vlad Badelita"
   },
   "flu/NA-N1": {
     "protoUrl": "https://taxonium.badelita.com/tree_NA_N1.jsonl.gz",
-    "title": "Flu NA N1 tree",
-    "description": "Flu NA N1 tree hosted by Vlad Badelita.",
+    "title": "Flu NA N1",
+    "description": "Influenza A NA subtype N1 tree.",
     "icon": "/assets/usher.png",
     "maintainerMessage": "Maintained by Vlad Badelita"
   },
   "flu/NA-N2": {
     "protoUrl": "https://taxonium.badelita.com/tree_NA_N2.jsonl.gz",
-    "title": "Flu NA N2 tree",
-    "description": "Flu NA N2 tree hosted by Vlad Badelita.",
+    "title": "Flu NA N2",
+    "description": "Influenza A NA subtype N2 tree.",
     "icon": "/assets/usher.png",
     "maintainerMessage": "Maintained by Vlad Badelita"
   },
   "flu/NA-N3": {
     "protoUrl": "https://taxonium.badelita.com/tree_NA_N3.jsonl.gz",
-    "title": "Flu NA N3 tree",
-    "description": "Flu NA N3 tree hosted by Vlad Badelita.",
+    "title": "Flu NA N3",
+    "description": "Influenza A NA subtype N3 tree.",
     "icon": "/assets/usher.png",
     "maintainerMessage": "Maintained by Vlad Badelita"
   },
   "flu/NA-N4": {
     "protoUrl": "https://taxonium.badelita.com/tree_NA_N4.jsonl.gz",
-    "title": "Flu NA N4 tree",
-    "description": "Flu NA N4 tree hosted by Vlad Badelita.",
+    "title": "Flu NA N4",
+    "description": "Influenza A NA subtype N4 tree.",
     "icon": "/assets/usher.png",
     "maintainerMessage": "Maintained by Vlad Badelita"
   },
   "flu/NA-N5": {
     "protoUrl": "https://taxonium.badelita.com/tree_NA_N5.jsonl.gz",
-    "title": "Flu NA N5 tree",
-    "description": "Flu NA N5 tree hosted by Vlad Badelita.",
+    "title": "Flu NA N5",
+    "description": "Influenza A NA subtype N5 tree.",
     "icon": "/assets/usher.png",
     "maintainerMessage": "Maintained by Vlad Badelita"
   },
   "flu/NA-N6": {
     "protoUrl": "https://taxonium.badelita.com/tree_NA_N6.jsonl.gz",
-    "title": "Flu NA N6 tree",
-    "description": "Flu NA N6 tree hosted by Vlad Badelita.",
+    "title": "Flu NA N6",
+    "description": "Influenza A NA subtype N6 tree.",
     "icon": "/assets/usher.png",
     "maintainerMessage": "Maintained by Vlad Badelita"
   },
   "flu/NA-N8": {
     "protoUrl": "https://taxonium.badelita.com/tree_NA_N8.jsonl.gz",
-    "title": "Flu NA N8 tree",
-    "description": "Flu NA N8 tree hosted by Vlad Badelita.",
+    "title": "Flu NA N8",
+    "description": "Influenza A NA subtype N8 tree.",
     "icon": "/assets/usher.png",
     "maintainerMessage": "Maintained by Vlad Badelita"
   },
   "flu/NA-N9": {
     "protoUrl": "https://taxonium.badelita.com/tree_NA_N9.jsonl.gz",
-    "title": "Flu NA N9 tree",
-    "description": "Flu NA N9 tree hosted by Vlad Badelita.",
+    "title": "Flu NA N9",
+    "description": "Influenza A NA subtype N9 tree.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/NA-N10": {
+    "protoUrl": "https://taxonium.badelita.com/tree_NA_N10.jsonl.gz",
+    "title": "Flu NA N10",
+    "description": "Influenza A NA subtype N10 tree.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/MP": {
+    "protoUrl": "https://taxonium.badelita.com/tree_MP.jsonl.gz",
+    "title": "Flu MP",
+    "description": "Influenza A MP (matrix protein) tree.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/NP": {
+    "protoUrl": "https://taxonium.badelita.com/tree_NP.jsonl.gz",
+    "title": "Flu NP",
+    "description": "Influenza A NP (nucleoprotein) tree.",
     "icon": "/assets/usher.png",
     "maintainerMessage": "Maintained by Vlad Badelita"
   },
   "flu/NP-all": {
     "protoUrl": "https://taxonium.badelita.com/tree_NP_all.jsonl.gz",
-    "title": "Flu NP all tree",
-    "description": "Flu NP all tree hosted by Vlad Badelita.",
+    "title": "Flu NP (all segments)",
+    "description": "Influenza A NP tree with all segments annotated.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/NS": {
+    "protoUrl": "https://taxonium.badelita.com/tree_NS.jsonl.gz",
+    "title": "Flu NS",
+    "description": "Influenza A NS (non-structural) tree.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/PA": {
+    "protoUrl": "https://taxonium.badelita.com/tree_PA.jsonl.gz",
+    "title": "Flu PA",
+    "description": "Influenza A PA polymerase tree.",
     "icon": "/assets/usher.png",
     "maintainerMessage": "Maintained by Vlad Badelita"
   },
   "flu/PA-all": {
     "protoUrl": "https://taxonium.badelita.com/tree_PA_all.jsonl.gz",
-    "title": "Flu PA all tree",
-    "description": "Flu PA all tree hosted by Vlad Badelita.",
+    "title": "Flu PA (all segments)",
+    "description": "Influenza A PA tree with all segments annotated.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/PB1": {
+    "protoUrl": "https://taxonium.badelita.com/tree_PB1.jsonl.gz",
+    "title": "Flu PB1",
+    "description": "Influenza A PB1 polymerase tree.",
     "icon": "/assets/usher.png",
     "maintainerMessage": "Maintained by Vlad Badelita"
   },
   "flu/PB1-all": {
     "protoUrl": "https://taxonium.badelita.com/tree_PB1_all.jsonl.gz",
-    "title": "Flu PB1 all tree",
-    "description": "Flu PB1 all tree hosted by Vlad Badelita.",
+    "title": "Flu PB1 (all segments)",
+    "description": "Influenza A PB1 tree with all segments annotated.",
+    "icon": "/assets/usher.png",
+    "maintainerMessage": "Maintained by Vlad Badelita"
+  },
+  "flu/PB2": {
+    "protoUrl": "https://taxonium.badelita.com/tree_PB2.jsonl.gz",
+    "title": "Flu PB2",
+    "description": "Influenza A PB2 polymerase tree.",
     "icon": "/assets/usher.png",
     "maintainerMessage": "Maintained by Vlad Badelita"
   },
   "flu/PB2-all": {
     "protoUrl": "https://taxonium.badelita.com/tree_PB2_all.jsonl.gz",
-    "title": "Flu PB2 all tree",
-    "description": "Flu PB2 all tree hosted by Vlad Badelita.",
+    "title": "Flu PB2 (all segments)",
+    "description": "Influenza A PB2 tree with all segments annotated.",
     "icon": "/assets/usher.png",
     "maintainerMessage": "Maintained by Vlad Badelita"
   }
