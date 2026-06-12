@@ -421,19 +421,12 @@ def do_processing(input_tree,
                         if hasattr(node, '_seg_matched'):
                             del node._seg_matched
 
-                # Add root reference mutations so Taxonium knows the reference state
+                # Add root AA reference mutations so Taxonium knows the reference
+                # amino acid state for all positions.
                 if ref_seq and loader:
-                    root_muts = [
-                        core_mutations.NucMutation(one_indexed_position=i + 1,
-                                                   mut_nuc=character,
-                                                   par_nuc="X",
-                                                   chromosome=segment_name)
-                        for i, character in enumerate(ref_seq)
-                    ]
                     segment_root_aa_muts = make_root_aa_mutations(
                         ref_seq, loader, segment_name)
                     tree.root.aa_muts.extend(segment_root_aa_muts)
-                    tree.root.nuc_mutations.extend(root_muts)
 
                 del loader, ref_seq
                 gc.collect()
@@ -451,18 +444,10 @@ def do_processing(input_tree,
                                                        aln_f, ref_seq, loader,
                                                        segment_name)
 
-                    # Add root reference mutations
-                    root_muts = [
-                        core_mutations.NucMutation(one_indexed_position=i + 1,
-                                                   mut_nuc=character,
-                                                   par_nuc="X",
-                                                   chromosome=segment_name)
-                        for i, character in enumerate(ref_seq)
-                    ]
+                    # Add root AA reference mutations
                     segment_root_aa_muts = make_root_aa_mutations(
                         ref_seq, loader, segment_name)
                     tree.root.aa_muts.extend(segment_root_aa_muts)
-                    tree.root.nuc_mutations.extend(root_muts)
                 else:
                     print(
                         f"  Warning: parsimony without GenBank for {segment_name}, skipping."
@@ -543,18 +528,10 @@ def do_processing(input_tree,
                             dummy.nuc_to_codon,
                             chromosome=segment_name)
 
-                    # Add root mutations for this segment
-                    root_muts = [
-                        core_mutations.NucMutation(one_indexed_position=i + 1,
-                                                   mut_nuc=character,
-                                                   par_nuc="X",
-                                                   chromosome=segment_name)
-                        for i, character in enumerate(root_seq)
-                    ]
+                    # Add root AA reference mutations for this segment
                     segment_root_aa_muts = make_root_aa_mutations(
                         root_seq, dummy, segment_name)
                     tree.root.aa_muts.extend(segment_root_aa_muts)
-                    tree.root.nuc_mutations.extend(root_muts)
 
                     # Mark nodes absent from this segment with X->X at the
                     # boundary (highest ancestor whose entire subtree is absent)
